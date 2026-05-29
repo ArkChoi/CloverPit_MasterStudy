@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class Boundary {
@@ -11,20 +12,39 @@ public class PlayerController : MonoBehaviour {
 	public float tilt;
 	public Boundary boundary;
 
-	public GameObject shot;
-	public Transform shotSpawn;
-	public float fireRate;
+    public float interactRange = 3f; // 상호작용 가능 거리
+    public LayerMask interactLayer; // 상호작용할 레이어 지정
 
-	private float nextFire;
+    private Camera camera;
 
-	void Update()
+    void Start()
+    {   // 카메라는 메인카메라 값을 넣어준다.
+        camera = GetComponentInChildren<Camera>(); ;
+        Debug.Log(camera + "Find");
+    }
+
+    void Update()
 	{
-		if (Input.GetButton("Fire1") && Time.time > nextFire) {
-			nextFire = Time.time + fireRate;
-			Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
-			GetComponent<AudioSource>().Play ();
-		}
-	}
+        // 플레이어 정면으로 Raycast 발사
+        Ray ray = camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, interactRange, interactLayer))
+        {
+            Debug.Log("물체감지");
+            // 부딪힌 오브젝트의 Tag 확인
+            if (hit.collider.CompareTag("interactable"))
+            {
+                SlotMachine SM = hit.collider.GetComponent<SlotMachine>();
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    SM.OnHighlight();
+                    Debug.Log("SlotMachineTouch");
+                }
+            }
+        }
+    }
 
 	void FixedUpdate()
 	{
