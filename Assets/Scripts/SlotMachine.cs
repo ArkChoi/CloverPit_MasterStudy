@@ -20,6 +20,11 @@ public class SlotMachine : MonoBehaviour
         }
     }
 
+    public Vector3 AttachCameraTransform()
+    {
+        return transform.Find("CameraPosition").position;
+    }
+
     public void OnHighlight()
     {
 
