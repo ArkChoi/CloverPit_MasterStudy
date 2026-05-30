@@ -36,6 +36,9 @@ public class SlotMachine : MonoBehaviour
 
     //슬롯머신 판정 관련 변수
 
+    //
+    private PlayerMachineState PCState;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -46,6 +49,8 @@ public class SlotMachine : MonoBehaviour
         MainGameUI = GameObject.Find("CanvasMainGame");
         Debug.Log(MainGameUI + "Find");
         MainGameUI.SetActive(false);
+
+        PCState = GameObject.Find("Player").GetComponent<PlayerMachineState>();
     }
 
     // Update is called once per frame
@@ -63,10 +68,16 @@ public class SlotMachine : MonoBehaviour
         }
     }
 
-    public Vector3 AttachCameraTransform()
+    public Vector3 AttachCameraPosition()
     {
         FirstUI.SetActive(true);
         return transform.Find("CameraPosition").position;
+    }
+
+    public Quaternion AttachCameraRotation()
+    {
+        FirstUI.SetActive(true);
+        return transform.Find("CameraPosition").rotation;
     }
 
     public void OnRun()
@@ -111,6 +122,8 @@ public class SlotMachine : MonoBehaviour
 
     public void Run()
     {
+        PCState.UseCoin();
+
         for (int i = 0; i < 5; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -185,28 +198,153 @@ public class SlotMachine : MonoBehaviour
         bool bIsJag = JagCheack(bIsHeaven);
         bool bIsJig = JigCheack(bIsGround);
 
-        bool XL0 = WidthXLCheack(0, bIsHeaven);
-        bool XL1 = WidthXLCheack(1, false);
-        bool XL2 = WidthXLCheack(2, bIsGround);
+        bool bIsXL0 = WidthXLCheack(0, bIsHeaven);
+        bool bIsXL1 = WidthXLCheack(1, false);
+        bool bIsXL2 = WidthXLCheack(2, bIsGround);
 
-        bool L0 = WidthLCheack(0, bIsHeaven, XL0);
-        bool L1 = WidthLCheack(1, false, XL1);
-        bool L2 = WidthLCheack(2, bIsGround, XL2);
+        bool bIsL0 = WidthLCheack(0, bIsHeaven, bIsXL0);
+        bool bIsL1 = WidthLCheack(1, false, bIsXL1);
+        bool bIsL2 = WidthLCheack(2, bIsGround, bIsXL2);
 
-        DiagonalCheack(0, bIsJag);
-        DiagonalCheack(1, false);
-        DiagonalCheack(2, bIsJig);
-        DiagonalCheack(3, false);
-        DiagonalCheack(4, bIsJag);
+        if (bIsJackpot)
+        {
+            int Value = ChangeValue(Map[0, 0]);
+            Value *= 10;
+            PCState.AddCoin(Value);
+        }
+
+        if (bIsEye)
+        {
+            int Value = ChangeValue(Map[2, 0]);
+            Value *= 8;
+            PCState.AddCoin(Value);
+        }
+
+        if (bIsHeaven)
+        {
+            int Value = ChangeValue(Map[2, 0]);
+            Value *= 7;
+            PCState.AddCoin(Value);
+        }
+        if (bIsGround)
+        {
+            int Value = ChangeValue(Map[2, 0]);
+            Value *= 7;
+            PCState.AddCoin(Value);
+        }
+
+        if (bIsJag)
+        {
+            int Value = ChangeValue(Map[2, 2]);
+            Value *= 4;
+            PCState.AddCoin(Value);
+        }
+        if (bIsJig)
+        {
+            int Value = ChangeValue(Map[2, 0]);
+            Value *= 4;
+            PCState.AddCoin(Value);
+        }
+
+        if (bIsXL0)
+        {
+            int Value = ChangeValue(Map[2, 0]);
+            Value *= 3;
+            PCState.AddCoin(Value);
+        }
+        if (bIsXL1)
+        {
+            int Value = ChangeValue(Map[2, 1]);
+            Value *= 3;
+            PCState.AddCoin(Value);
+        }
+        if (bIsXL2)
+        {
+            int Value = ChangeValue(Map[2, 2]);
+            Value *= 3;
+            PCState.AddCoin(Value);
+        }
+
+        if (bIsL0)
+        {
+            int Value = ChangeValue(Map[2, 0]);
+            Value *= 2;
+            PCState.AddCoin(Value);
+        }
+        if (bIsL1)
+        {
+            int Value = ChangeValue(Map[2, 1]);
+            Value *= 2;
+            PCState.AddCoin(Value);
+        }
+        if (bIsL2)
+        {
+            int Value = ChangeValue(Map[2, 2]);
+            Value *= 2;
+            PCState.AddCoin(Value);
+        }
+
+        if (DiagonalCheack(0, bIsJag))
+        {
+            int Value = ChangeValue(Map[0, 0]);
+            Value *= 1;
+            PCState.AddCoin(Value);
+        }
+        if(DiagonalCheack(1, false))
+        {
+            int Value = ChangeValue(Map[1, 0]);
+            Value *= 1;
+            PCState.AddCoin(Value);
+        }
+        if(DiagonalCheack(2, bIsJig))
+        {
+            {
+                int Value = ChangeValue(Map[2, 0]);
+                Value *= 1;
+                PCState.AddCoin(Value);
+            }
+        }
+        if(DiagonalCheack(3, false))
+        {
+            int Value = ChangeValue(Map[3, 0]);
+            Value *= 1;
+            PCState.AddCoin(Value);
+        }
+        if(DiagonalCheack(4, bIsJag))
+        {
+            int Value = ChangeValue(Map[4, 0]);
+            Value *= 1;
+            PCState.AddCoin(Value);
+        }
 
         for (int i = 0; i < 5; i++)
         {
-            LengthCheack(i, bIsEye);
+            if(LengthCheack(i, bIsEye))
+            {
+                int Value = ChangeValue(Map[i, 0]);
+                Value *= 1;
+                PCState.AddCoin(Value);
+            }
         }
 
-        WidthCheack(0, bIsHeaven, XL0, L0);
-        WidthCheack(1, false, XL1, L1);
-        WidthCheack(2, bIsGround, XL2, L2);
+        if(WidthCheack(0, bIsHeaven, bIsXL0, bIsL0))
+        {
+            int Value = ChangeValue(Map[2, 0]);
+            Value *= 1;
+            PCState.AddCoin(Value);
+        }
+        if(WidthCheack(1, false, bIsXL1, bIsL1))
+        {
+            int Value = ChangeValue(Map[2, 1]);
+            Value *= 1;
+            PCState.AddCoin(Value);
+        }
+        if(WidthCheack(2, bIsGround, bIsXL2, bIsL2))
+        {
+            int Value = ChangeValue(Map[2, 2]);
+            Value *= 1;
+            PCState.AddCoin(Value);
+        }
 
     }
 
@@ -626,5 +764,48 @@ public class SlotMachine : MonoBehaviour
 
         Debug.Log("Width");
         return true;
+    }
+
+    int ChangeValue(int InNumber)
+    {
+        int Value = 0;
+        switch (InNumber)
+        {
+            //체리
+            case 1:
+                Value = 2;
+                break;
+            //레몬
+            case 2:
+                Value = 2;
+                break;
+            //클로버
+            case 3:
+                Value = 3;
+                break;
+            //종
+            case 4:
+                Value = 3;
+                break;
+            //다이아몬드
+            case 5:
+                Value = 5;
+                break;
+            //보물
+            case 8:
+                Value = 5;
+                break;
+            //세븐
+            case 7:
+                Value = 7;
+                break;
+
+            default:
+                Value = 0;
+                break;
+
+        }
+
+        return Value;
     }
 }

@@ -12,7 +12,7 @@ public class PlayerInteractable : MonoBehaviour
     private Vector3 PlayerTransform;
     private SlotMachine SM = null;
     private SlotMachineLever SML = null;
-    private GameObject FPSUI = null;
+    private GameObject FPSAimUI = null;
 
     private bool bIsPlayGame = false;
 
@@ -22,8 +22,8 @@ public class PlayerInteractable : MonoBehaviour
         camera = Camera.main;
         Debug.Log(camera + "Find");
 
-        FPSUI = GameObject.Find("CanvasFPS");
-        Debug.Log(FPSUI + "Find");
+        FPSAimUI = GameObject.Find("Crosshair");
+        Debug.Log(FPSAimUI + "Find");
     }
 
     // Update is called once per frame
@@ -89,8 +89,9 @@ public class PlayerInteractable : MonoBehaviour
 
                     if (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0))
                     {
-                        Vector3 CameraPosition = SM.AttachCameraTransform();
-                        AttachCamera(CameraPosition);
+                        Vector3 CameraPosition = SM.AttachCameraPosition();
+                        Quaternion CameraRotation = SM.AttachCameraRotation();
+                        AttachCamera(CameraPosition, CameraRotation);
                         //Debug.Log("SlotMachineTouch");
                     }
                 }
@@ -98,13 +99,14 @@ public class PlayerInteractable : MonoBehaviour
         }
     }
 
-    void AttachCamera(Vector3 InCameraTransform)
+    void AttachCamera(Vector3 InCameraTransform, Quaternion InCameraRotation)
     {
         PlayerTransform = transform.position;
         transform.position = InCameraTransform;
+        transform.rotation = InCameraRotation;
         GetComponent<CharacterController>().enabled = false;
         GetComponent<FirstPersonController>().enabled = false;
-        FPSUI.SetActive(false);
+        FPSAimUI.SetActive(false);
 
         bIsPlayGame = true;
     }
@@ -114,7 +116,7 @@ public class PlayerInteractable : MonoBehaviour
         transform.position = PlayerTransform;
         GetComponent<CharacterController>().enabled = true;
         GetComponent<FirstPersonController>().enabled = true;
-        FPSUI.SetActive(true);
+        FPSAimUI.SetActive(true);
 
         bIsPlayGame = false;
     }
