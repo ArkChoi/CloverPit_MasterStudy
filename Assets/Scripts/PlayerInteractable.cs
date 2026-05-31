@@ -42,6 +42,7 @@ public class PlayerInteractable : MonoBehaviour
             // 광선이 groundLayer와 충돌했는지 확인
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
             {
+                //Debug.Log("Findinteractable");
                 // 부딪힌 오브젝트의 Tag 확인
                 if (hit.collider.CompareTag("Lever"))
                 {
@@ -119,5 +120,6 @@ public class PlayerInteractable : MonoBehaviour
         FPSAimUI.SetActive(true);
 
         bIsPlayGame = false;
+        SM.OffRun();
     }
 }

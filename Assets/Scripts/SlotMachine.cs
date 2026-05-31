@@ -44,13 +44,15 @@ public class SlotMachine : MonoBehaviour
     {
         FirstUI = GameObject.Find("CanvasFirst");
         Debug.Log(FirstUI + "Find");
-        FirstUI.SetActive(false);
+        //FirstUI.SetActive(false);
 
         MainGameUI = GameObject.Find("CanvasMainGame");
         Debug.Log(MainGameUI + "Find");
-        MainGameUI.SetActive(false);
+        //MainGameUI.SetActive(false);
 
         PCState = GameObject.Find("Player").GetComponent<PlayerMachineState>();
+
+        Init();
     }
 
     // Update is called once per frame
@@ -66,6 +68,12 @@ public class SlotMachine : MonoBehaviour
             OffHighlight();
             bIsOffHighlight = true;
         }
+    }
+
+    void Init()
+    {
+        FirstUI.SetActive(false);
+        MainGameUI.SetActive(false);
     }
 
     public Vector3 AttachCameraPosition()
@@ -102,12 +110,11 @@ public class SlotMachine : MonoBehaviour
         bIsOffHighlight = false;
     }
 
-    void OffRun()
+    public void OffRun()
     {
         bIsRun = false;
 
-        FirstUI.SetActive(true);
-        MainGameUI.SetActive(false);
+        Init();
     }
     void OffHighlight()
     {
